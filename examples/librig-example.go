@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-//	libRig.NameGender = libRig.MALE
+	libRig.NameGender = libRig.MALE
+	libRig.PhoneHasX = false
 	ident := libRig.GetIdentity()
 	fmt.Println(ident)
 }

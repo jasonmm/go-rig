@@ -10,7 +10,6 @@ import (
 	"time"
 )
 
-// Default filenames.
 const (
 	FEMALE_FIRST_NAMES = "fnames.idx"
 	MALE_FIRST_NAMES   = "mnames.idx"
@@ -23,9 +22,16 @@ const (
 	EITHER = 3
 )
 
+// The directory where the data files are found.
 var DataDirectory = "/usr/share/rig/"
+
+// The gender of the fake identity's first name.
 var NameGender = EITHER
 
+// Whether the non-area code part of the phone number has x's.
+var PhoneHasX = true
+
+// Struct holding the new identity.
 type Identity struct {
 	FirstName string
 	LastName  string
@@ -67,11 +73,20 @@ func getLine(filePath string, lineNum int) string {
 	return scanner.Text()
 }
 
-// Break out the city/state/zip and create a phone number from the area code.
-func getCityStateZipPhone(loc string) (string, string, string, string) {
+// The city, state, zip, and area code are stored all on the same line in
+// the data file.  Separate these and create a phone number, then return
+// all four as separate variables: city, state, zip, phone.
+func getCityStateZipPhone(loc string) (city string, state string, zip string, phone string) {
 	parts := strings.Split(loc, " ")
 
-	phone := "(" + parts[2] + ") xxx-xxxx"
+	phone = "(" + parts[2] + ") "
+	if PhoneHasX {
+		phone = phone + "xxx-xxxx"
+	} else {
+		exchange := rand.Intn(898) + 101
+		subscriber := rand.Intn(8998) + 1001
+		phone = phone + strconv.Itoa(exchange) + "-" + strconv.Itoa(subscriber)
+	}
 
 	return parts[0], parts[1], parts[3], phone
 }
